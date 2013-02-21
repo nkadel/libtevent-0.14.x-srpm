@@ -21,9 +21,6 @@ BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
 
-Provides: bundled(libreplace)
-
-# Patches
 
 %description
 Tevent is an event system based on the talloc memory management library.
@@ -42,7 +39,6 @@ Requires: pkgconfig
 %description devel
 Header files needed to develop programs that link against the Tevent library.
 
-
 %package -n python-tevent
 Group: Development/Libraries
 Summary: Python bindings for the Tevent library
@@ -52,21 +48,6 @@ Requires: libtevent = %{version}-%{release}
 Python bindings for libtevent
 
 %prep
-# Update timestamps on the files touched by a patch, to avoid non-equal
-# .pyc/.pyo files across the multilib peers within a build, where "Level"
-# is the patch prefix option (e.g. -p1)
-# Taken from specfile for python-simplejson
-UpdateTimestamps() {
-  Level=$1
-  PatchFile=$2
-
-  # Locate the affected files:
-  for f in $(diffstat $Level -l $PatchFile); do
-    # Set the files to have the same timestamp as that of the patch:
-    touch -r $PatchFile $f
-  done
-}
-
 %setup -q -n tevent-%{version}
 
 %build
@@ -75,7 +56,11 @@ UpdateTimestamps() {
            --builtin-libraries=replace
 
 make %{?_smp_mflags} V=1
+
 doxygen doxy.config
+
+%check
+make %{?_smp_mflags} check
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -117,68 +102,38 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
-* Mon Aug 20 2012 Jakub Hrozek <jhrozek@redhat.com> - 0.9.17-1
-- New upstream release 0.9.17
-- Own the individual man pages, not the system-level directory
-- Build the manual pages
+* Mon Aug 20 2010 Jakub Hrozek <jhrozek@redhat.com> - 0.9.17-1
+- Rebase to 0.9.17 to provide the version Samba4 needs
+- Drop EXCLUDE_PATTERNS workaround in specfile
+- Resolves: rhbz#766336
 
-* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.16-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+* Fri Aug 03 2010 Jakub Hrozek <jhrozek@redhat.com> - 0.9.16-4
+- Fix EXCLUDE_PATTERNS in doxyfile
 
-* Wed Jun 20 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.16-1
-- New upstream release 0.9.16
-- Adds tevent_*_trace_*() and tevent_context_init_ops()
-- Move tevent.py to the arch-specific directory
+- Related: rhbz#766336
 
-* Fri Feb 10 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.15-1
-- New upstream release 0.9.15
-- Properly re-sets the nested.level flag in the ev.ctx when reinitializing
-  after a fork()
-- Allow tevent_signal events to be freed during their handler
+* Fri Aug 03 2010 Jakub Hrozek <jhrozek@redhat.com> - 0.9.16-3
+- Update doxygen file before building documentation
 
-* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.14-6
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+- Related: rhbz#766336
 
-* Tue Dec 06 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.14-4
-- Include missing patch file
+* Thu Aug 02 2010 Jakub Hrozek <jhrozek@redhat.com> - 0.9.16-2
+- Add BuildRequires on libxslt and docbook-style-xsl to enable
+  building manual pages
 
-* Tue Dec 06 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.14-4
-- Build pytevent properly
+- Related: rhbz#766336
 
-* Thu Dec 01 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.14-3
-- Add patch to ignore --disable-silent-rules
-- Include API documentation
+* Thu Aug 02 2010 Jakub Hrozek <jhrozek@redhat.com> - 0.9.16-1
+- Rebase to 0.9.16 to provide the version Samba4 needs
+- Resolves: rhbz#766336
+- Drop ABI compatibility patch (no longer needed)
 
-* Wed Nov 23 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.14-2
-- Add explicit mention of the bundled libreplace
-- https://fedorahosted.org/fpc/ticket/120
-
-* Wed Nov 09 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.14-1
-- New upstream release
-- Required for building more recent versions of samba4
-
-* Tue Aug  2 2011 Simo Sorce <ssorce@redhat.com> - 0.9.13-1
-- New upstream release
-
-* Tue Mar 15 2011 Simo Sorce <ssorce@redhat.com> - 0.9.11-1
-- New upstream release
-
-* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.10-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
-
-* Tue Jan 18 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.10-3
-- Add missing Buildrequires for pytalloc-devel
-
-* Fri Jan 14 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.10-2
-- Let rpmbuild strip binaries, make build more verbose.
-- Original patch by Ville SkyttÃ¤ <ville.skytta@iki.fi>
-
-* Wed Jan 12 2011 Stephen Gallagher <sgallagh@redhat.com> - 0.9.10-1
-- New upstream release
-- Convert to new WAF build-system
+* Fri May 21 2010 Stephen Gallagher <sgallagh@redhat.com> - 0.9.8-8
+- Run make check during RPM build
+- Fix abi_check patch to guarantee script executability
 
 * Wed Feb 24 2010 Stephen Gallagher <sgallagh@redhat.com> - 0.9.8-7.1
-- Bump revision to chain-build libtevent, samba4 and sssd
+- Remove all references to ABI compatibility patch
 
 * Wed Feb 24 2010 Stephen Gallagher <sgallagh@redhat.com> - 0.9.8-7
 - Drop ABI compatibility patch (no longer needed)

@@ -3,8 +3,8 @@ libtevent-0.9.17-srpm
 
 SRPM building tools for libtevent-0.9.17 for runing Samba 4 on RHEL 6.
 
-These are built from Fedora rawhide releases, and need to be built and
-installed in the following order.
+This tool taken from the RHEL 6.4 release, without modification.
+The set of tools need to be built and installed in the following order.
 
 	krb5-1.10.3-srpm
 	iniparser-3.1-srpm

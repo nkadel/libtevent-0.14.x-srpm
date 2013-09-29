@@ -5,7 +5,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
-Version: 0.9.18
+Version: 0.9.19
 Release: 1%{?dist}
 Group: System Environment/Daemons
 Summary: The tevent library
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sat Sep 20 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-01
+- New upstream release 0.9.19
+
 * Mon Mar 18 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.18-1
 - New upstream release 0.9.18
 

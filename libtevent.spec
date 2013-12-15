@@ -12,6 +12,7 @@ Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
 Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
+#Source: http://www.samba.org/pub/ftp/tevent/tevent-%{version}%{pre_release}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires: libtalloc-devel >= 2.0.7

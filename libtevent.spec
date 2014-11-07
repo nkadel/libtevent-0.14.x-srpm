@@ -5,19 +5,18 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
-Version: 0.9.20
+Version: 0.9.22
 Release: 0.1%{?dist}
 Group: System Environment/Daemons
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
-Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
-#Source: http://www.samba.org/pub/ftp/tevent/tevent-%{version}%{pre_release}.tar.gz
+Source: http://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires: libtalloc-devel >= 2.0.7
+BuildRequires: libtalloc-devel >= 2.1.1
 BuildRequires: python-devel
-BuildRequires: pytalloc-devel >= 2.0.7
+BuildRequires: pytalloc-devel >= 2.1.1
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -119,10 +118,17 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
-* Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.20-0.01
+* Fri Nov  7 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.21-0.4
+- New upstream release 0.9.22
+- Update libtalloc requirements
+
+* Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.21-0.1
+- New upstream release 0.9.21
+
+* Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.20-0.1
 - New upstream release 0.9.20
 
-* Sat Sep 20 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-01
+* Sat Sep 20 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-0.1
 - New upstream release 0.9.19
 
 * Mon Mar 18 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.18-1

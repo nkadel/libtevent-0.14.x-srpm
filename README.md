@@ -6,7 +6,6 @@ SRPM building tools for libtevent-0.9.x for runing Samba 4 on RHEL 6.
 This tool taken from the RHEL 6.4 release, without modification.
 The set of tools need to be built and installed in the following order.
 
-	krb5-1.10.3-srpm
 	iniparser-3.1-srpm
 
 	libtalloc-2.1.x-srpm

@@ -5,7 +5,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
-Version: 0.9.23
+Version: 0.9.24
 Release: 0.1%{?dist}
 Group: System Environment/Daemons
 Summary: The tevent library
@@ -14,9 +14,9 @@ URL: http://tevent.samba.org/
 Source: http://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires: libtalloc-devel >= 2.1.1
+BuildRequires: libtalloc-devel >= 2.1.2
 BuildRequires: python-devel
-BuildRequires: pytalloc-devel >= 2.1.1
+BuildRequires: pytalloc-devel >= 2.1.2
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -118,6 +118,8 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Mar 11 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.24-0.4
+
 * Sat Feb 28 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.23-0.4
 - New upstream release 0.9.23
 

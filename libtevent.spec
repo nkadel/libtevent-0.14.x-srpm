@@ -14,9 +14,9 @@ URL: http://tevent.samba.org/
 Source: http://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires: libtalloc-devel >= 2.1.2
+BuildRequires: libtalloc-devel >= 2.1.3
 BuildRequires: python-devel
-BuildRequires: pytalloc-devel >= 2.1.2
+BuildRequires: pytalloc-devel >= 2.1.3
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -36,7 +36,7 @@ tevent_req (Tevent Request) functions.
 Group: Development/Libraries
 Summary: Developer tools for the Tevent library
 Requires: libtevent = %{version}-%{release}
-Requires: libtalloc-devel >= 2.0.7
+Requires: libtalloc-devel >= 2.1.3
 Requires: pkgconfig
 
 %description devel
@@ -119,10 +119,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Sat Sep  5 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.25-0.4
-* New upstream releast 0.9.25
+- New upstream release 0.9.25
+- Update libtalloc dependencies
 
 * Wed Mar 11 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.24-0.4
-* New upstream releast 0.9.24
+- New upstream releas5 0.9.24
 
 * Sat Feb 28 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.23-0.4
 - New upstream release 0.9.23

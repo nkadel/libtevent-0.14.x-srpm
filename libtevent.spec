@@ -138,7 +138,7 @@ rm -rf $RPM_BUILD_ROOT
 * Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.20-0.1
 - New upstream release 0.9.20
 
-* Sat Sep 20 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-0.1
+* Sat Sep 21 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-0.1
 - New upstream release 0.9.19
 
 * Mon Mar 18 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.18-1
@@ -227,5 +227,5 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Sep 16 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-2
 - Fix abi compatibility with 0.9.3
 
-* Sat Sep 8 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-1
+* Sat Sep  5 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-1
 - First independent release for tevent 0.9.8

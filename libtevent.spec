@@ -5,7 +5,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
-Version: 0.9.30
+Version: 0.9.31
 Release: 0.1%{?dist}
 Group: System Environment/Daemons
 Summary: The tevent library
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sat Feb 18 2017 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.31-0.1
+- Update to 0.9.31
+
 * Sun Apr 10 2016 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.30-0.1
 - Update to 0.9.30
 

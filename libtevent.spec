@@ -5,7 +5,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
-Version: 0.9.31
+Version: 0.9.36
 Release: 0.1%{?dist}
 Group: System Environment/Daemons
 Summary: The tevent library
@@ -14,9 +14,9 @@ URL: http://tevent.samba.org/
 Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires: libtalloc-devel >= 2.1.8
+BuildRequires: libtalloc-devel >= 2.1.11
 BuildRequires: python-devel
-BuildRequires: pytalloc-devel >= 2.1.8
+BuildRequires: pytalloc-devel >= 2.1.11
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -36,7 +36,7 @@ tevent_req (Tevent Request) functions.
 Group: Development/Libraries
 Summary: Developer tools for the Tevent library
 Requires: libtevent = %{version}-%{release}
-Requires: libtalloc-devel >= 2.1.3
+Requires: libtalloc-devel >= 2.1.11
 Requires: pkgconfig
 
 %description devel
@@ -118,13 +118,10 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
-* Sat Feb 18 2017 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.31-0.1
-- Update to 0.9.31
+* Fri Mar 18 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0.1
+- Update to 0.9.36
 
-* Sun Apr 10 2016 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.30-0.1
-- Update to 0.9.30
-
-* Sun Apr 10 2016 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.28-0.1
+* Sun Apr 10 2016 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.26-0.1
 - New upstream release 0.9.26
 - Update libtalloc dependencies
 

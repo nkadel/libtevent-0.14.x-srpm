@@ -1,29 +1,32 @@
-%if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+
+%if 0%{?fedora}
+%global with_python3 1
+%else
+%global with_python3 0
 %endif
-%{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print(get_python_version())")}
 
 Name: libtevent
 Version: 0.9.36
 Release: 0.1%{?dist}
-Group: System Environment/Daemons
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
-Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
-BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
-BuildRequires: libtalloc-devel >= 2.1.11
+BuildRequires: libtalloc-devel >= 2.1.0
 BuildRequires: python-devel
-BuildRequires: pytalloc-devel >= 2.1.11
+BuildRequires: python2-talloc-devel >= 2.1.0
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
 
 Provides: bundled(libreplace)
 
-# Patches
+%if 0%{?with_python3}
+BuildRequires: python3-devel
+BuildRequires: python3-talloc-devel >= 2.1.11
+%endif
 
 %description
 Tevent is an event system based on the talloc memory management library.
@@ -33,23 +36,37 @@ Tevent also provide helpers to deal with asynchronous code providing the
 tevent_req (Tevent Request) functions.
 
 %package devel
-Group: Development/Libraries
 Summary: Developer tools for the Tevent library
-Requires: libtevent = %{version}-%{release}
-Requires: libtalloc-devel >= 2.1.11
+Requires: libtevent%{?_isa} = %{version}-%{release}
+Requires: libtalloc-devel%{?_isa} >= 2.1.11
 Requires: pkgconfig
 
 %description devel
 Header files needed to develop programs that link against the Tevent library.
 
 
-%package -n python-tevent
-Group: Development/Libraries
+%package -n python2-tevent
 Summary: Python bindings for the Tevent library
-Requires: libtevent = %{version}-%{release}
+Requires: libtevent%{?_isa} = %{version}-%{release}
 
-%description -n python-tevent
+Obsoletes: python-tevent%{?_isa} < %{version}-%{release}
+%{?python_provide:%python_provide python2-tevent}
+
+%description -n python2-tevent
 Python bindings for libtevent
+
+%if 0%{?fedora}
+
+%package -n python3-tevent
+Summary: Python 3 bindings for the Tevent library
+Requires: libtevent%{?_isa} = %{version}-%{release}
+
+%{?python_provide:%python_provide python3-tevent}
+
+%description -n python3-tevent
+Python 3 bindings for libtevent
+
+%endif
 
 %prep
 # Update timestamps on the files touched by a patch, to avoid non-equal
@@ -70,16 +87,26 @@ UpdateTimestamps() {
 %setup -q -n tevent-%{version}
 
 %build
+
+%if 0%{?with_python3}
+export PY3_CONFIG_FLAGS=--extra-python=%{__python3}
+%else
+export PY3_CONFIG_FLAGS=
+%endif
+
 %configure --disable-rpath \
            --bundled-libraries=NONE \
-           --builtin-libraries=replace
+           --builtin-libraries=replace \
+           $PY3_CONFIG_FLAGS
 
 make %{?_smp_mflags} V=1
 
 doxygen doxy.config
 
+%check
+make %{?_smp_mflags} check
+
 %install
-rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
@@ -94,59 +121,120 @@ rm -f doc/man/man3/todo*
 mkdir -p $RPM_BUILD_ROOT/%{_mandir}
 cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files
-%defattr(-,root,root,-)
 %{_libdir}/libtevent.so.*
 
 %files devel
-%defattr(-,root,root,-)
 %{_includedir}/tevent.h
 %{_libdir}/libtevent.so
 %{_libdir}/pkgconfig/tevent.pc
 %{_mandir}/man3/tevent*.gz
 
-%files -n python-tevent
-%defattr(-,root,root,-)
-%{python_sitearch}/tevent.py*
-%{python_sitearch}/_tevent.so
+%files -n python2-tevent
+%{python2_sitearch}/tevent.py*
+%{python2_sitearch}/_tevent.so
 
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
 
+%if 0%{?with_python3}
+
+%files -n python3-tevent
+%{python3_sitearch}/tevent.py
+%{python3_sitearch}/__pycache__/tevent.*
+%{python3_sitearch}/_tevent.cpython*.so
+
+%endif
+
 %changelog
-* Fri Mar 18 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0.1
-- Update to 0.9.36
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.33-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
-* Sun Apr 10 2016 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.26-0.1
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.33-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Mon Jul 24 2017 Lukas Slebodnik <lslebodn@redhat.com> - 0.9.33-1
+- New upstream release 0.9.33
+
+* Fri Jun 23 2017 Lukas Slebodnik <lslebodn@redhat.com> - 0.9.32-1
+- New upstream release 0.9.32
+
+* Fri Mar 10 2017 Lukas Slebodnik <lslebodn@redhat.org> - 0.9.31-4
+- Fix configure detection with strict CFLAGS - rhbz#1401231
+- Fix few fedora packaging violations - rhbz#1401226
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.31-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Mon Dec 19 2016 Miro Hrončok <mhroncok@redhat.com> - 0.9.31-2
+- Rebuild for Python 3.6
+
+* Fri Oct  7 2016 Jakub Hrozek <jhrozek@redhat.com> - 0.9.31-1
+- New upstream release 0.9.31
+
+* Mon Aug 29 2016 Jakub Hrozek <jhrozek@redhat.com> - 0.9.30-1
+- New upstream release 0.9.30
+
+* Thu Jul 28 2016 Jakub Hrozek <jhrozek@redhat.com> - 0.9.29-1
+- New upstream release 0.9.29
+
+* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.28-3
+- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
+
+* Thu Apr 21 2016 Petr Viktorin <pviktori@redhat.com> - 0.9.28-2
+- Build Python 3 package
+- Resolves: rhbz#1298250 - libtevent: Provide a Python 3 subpackage
+
+* Mon Feb 22 2016 Jakub Hrozek <jhrozek@redhat.com> - 0.9.28-1
+- New upstream release 0.9.28
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.26-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Nov 11 2015 Jakub Hrozek <jhrozek@redhat.com> - 0.9.26-1
 - New upstream release 0.9.26
-- Update libtalloc dependencies
 
-* Sat Sep  5 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.25-0.4
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.25-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Sun Jun 14 2015 Jakub Hrozek <jhrozek@redhat.com> - 0.9.25-1
 - New upstream release 0.9.25
-- Update libtalloc dependencies
 
-* Wed Mar 11 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.24-0.4
-- New upstream releas5 0.9.24
+* Thu Mar  5 2015 Jakub Hrozek <jhrozek@redhat.com> - 0.9.24-1
+- New upstream release 0.9.24
 
-* Sat Feb 28 2015 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.23-0.4
+* Mon Mar  2 2015 Jakub Hrozek <jhrozek@redhat.com> - 0.9.23-1
 - New upstream release 0.9.23
 
-* Fri Nov  7 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.21-0.4
+* Thu Oct  9 2014 Jakub Hrozek <jhrozek@redhat.com> - 0.9.22-1
 - New upstream release 0.9.22
-- Update libtalloc requirements
 
-* Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.21-0.1
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.21-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.21-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Mon Jan 20 2014 Jakub Hrozek <jhrozek@redhat.com> - 0.9.21-1
 - New upstream release 0.9.21
 
-* Sun Jan 12 2014 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.20-0.1
+* Sun Dec 15 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.20-1
 - New upstream release 0.9.20
 
-* Sat Sep 21 2013 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.19-0.1
+* Fri Aug 02 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.19-1
 - New upstream release 0.9.19
+- Drop upstreamed patch
+
+* Mon Jul 01 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.9.18-3
+- Make the dependency requirements arch-specific
+- Remove ancient, unused patches
+- Remove python variables that are not needed on modern systems
+
+* Wed Jun 19 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.18-2
+- Apply a patch from upstream to fix tevent_poll's additional_flags
+  on 32bit architectures
+- Resolves: rhbz#975490
 
 * Mon Mar 18 2013 Jakub Hrozek <jhrozek@redhat.com> - 0.9.18-1
 - New upstream release 0.9.18
@@ -234,5 +322,5 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Sep 16 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-2
 - Fix abi compatibility with 0.9.3
 
-* Sat Sep  5 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-1
+* Tue Sep 8 2009 Simo Sorce <ssorce@redhat.com> - 0.9.8-1
 - First independent release for tevent 0.9.8

@@ -14,9 +14,9 @@ License: LGPLv3+
 URL: http://tevent.samba.org/
 Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
-BuildRequires: libtalloc-devel >= 2.1.0
+BuildRequires: libtalloc-devel >= 2.1.13
 BuildRequires: python-devel
-BuildRequires: python2-talloc-devel >= 2.1.0
+BuildRequires: python2-talloc-devel >= 2.1.13
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -25,7 +25,7 @@ Provides: bundled(libreplace)
 
 %if 0%{?with_python3}
 BuildRequires: python3-devel
-BuildRequires: python3-talloc-devel >= 2.1.11
+BuildRequires: python3-talloc-devel >= 2.1.13
 %endif
 
 %description
@@ -38,7 +38,7 @@ tevent_req (Tevent Request) functions.
 %package devel
 Summary: Developer tools for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
-Requires: libtalloc-devel%{?_isa} >= 2.1.11
+Requires: libtalloc-devel%{?_isa} >= 2.1.13
 Requires: pkgconfig
 
 %description devel
@@ -148,6 +148,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
+* Wed Apr 18 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0.1
+- Update to 0.9.36
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.33-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 

@@ -1,6 +1,6 @@
 %{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 %global with_python3 1
 %else
 %global with_python3 0
@@ -14,9 +14,14 @@ License: LGPLv3+
 URL: http://tevent.samba.org/
 Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
-BuildRequires: libtalloc-devel >= 2.1.13
-BuildRequires: python-devel
-BuildRequires: python2-talloc-devel >= 2.1.13
+BuildRequires: gcc
+%if (0%{?fedora} >= 28 || 0%{?rhel} > 7)
+# workaround for unnecessary check in libreplace
+BuildRequires: libtirpc-devel
+%endif
+BuildRequires: libtalloc-devel >= 2.1.0
+BuildRequires: python2-devel
+BuildRequires: python2-talloc-devel >= 2.1.0
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
@@ -25,7 +30,7 @@ Provides: bundled(libreplace)
 
 %if 0%{?with_python3}
 BuildRequires: python3-devel
-BuildRequires: python3-talloc-devel >= 2.1.13
+BuildRequires: python3-talloc-devel >= 2.0.7
 %endif
 
 %description
@@ -38,7 +43,7 @@ tevent_req (Tevent Request) functions.
 %package devel
 Summary: Developer tools for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
-Requires: libtalloc-devel%{?_isa} >= 2.1.13
+Requires: libtalloc-devel%{?_isa} >= 2.0.7
 Requires: pkgconfig
 
 %description devel
@@ -49,13 +54,12 @@ Header files needed to develop programs that link against the Tevent library.
 Summary: Python bindings for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
 
-Obsoletes: python-tevent%{?_isa} < %{version}-%{release}
 %{?python_provide:%python_provide python2-tevent}
 
 %description -n python2-tevent
 Python bindings for libtevent
 
-%if 0%{?fedora}
+%if 0%{?with_python3}
 
 %package -n python3-tevent
 Summary: Python 3 bindings for the Tevent library
@@ -134,9 +138,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python2_sitearch}/tevent.py*
 %{python2_sitearch}/_tevent.so
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %if 0%{?with_python3}
 
@@ -148,8 +150,30 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
-* Wed Apr 18 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0.1
-- Update to 0.9.36
+* Mon Feb 26 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.36-1
+- rhbz#1548613 New upstream release 0.9.36
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.35-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 0.9.35-2
+- Rebuilt for switch to libxcrypt
+
+* Sat Jan 13 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.35-1
+- rhbz#1534134 New upstream release 0.9.35
+
+* Tue Jan 09 2018 Iryna Shcherbina <ishcherb@redhat.com> - 0.9.34-4
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
+* Thu Nov 30 2017 Merlin Mathesius <mmathesi@redhat.com> - 0.9.34-3
+- Cleanup spec file conditionals
+
+* Thu Nov 30 2017 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.34-2
+- Update spec file conditionals
+
+* Tue Nov 14 2017 Lukas Slebodnik <lslebodn@redhat.com> - 0.9.34-1
+- New upstream release 0.9.34
 
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.33-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild

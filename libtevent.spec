@@ -11,8 +11,8 @@ Version: 0.9.36
 Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
-URL: http://tevent.samba.org/
-Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
+URL: https://tevent.samba.org/
+Source: https://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 BuildRequires: gcc
 %if (0%{?fedora} >= 28 || 0%{?rhel} > 7)

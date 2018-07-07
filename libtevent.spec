@@ -8,7 +8,7 @@
 
 Name: libtevent
 Version: 0.9.36
-Release: 0.1%{?dist}
+Release: 0%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://tevent.samba.org/

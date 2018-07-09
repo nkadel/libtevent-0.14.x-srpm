@@ -138,7 +138,12 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python2_sitearch}/tevent.py*
 %{python2_sitearch}/_tevent.so
 
+%if 0%{?fedora} > 0
 %ldconfig_scriptlets
+%else
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+%endif
 
 %if 0%{?with_python3}
 
@@ -150,6 +155,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
+* Sun Jul 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0
+- Disable ldconfig_scriptlets for RHEL
+
 * Mon Feb 26 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.36-1
 - rhbz#1548613 New upstream release 0.9.36
 

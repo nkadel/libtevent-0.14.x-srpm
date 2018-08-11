@@ -7,12 +7,12 @@
 %endif
 
 Name: libtevent
-Version: 0.9.36
+Version: 0.9.37
 Release: 0%{?dist}
 Summary: The tevent library
 License: LGPLv3+
-URL: https://tevent.samba.org/
-Source: https://samba.org/ftp/tevent/tevent-%{version}.tar.gz
+URL: http://tevent.samba.org/
+Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 BuildRequires: gcc
 %if (0%{?fedora} >= 28 || 0%{?rhel} > 7)
@@ -88,7 +88,7 @@ UpdateTimestamps() {
   done
 }
 
-%setup -q -n tevent-%{version}
+%autosetup -n tevent-%{version} -p1
 
 %build
 
@@ -96,6 +96,12 @@ UpdateTimestamps() {
 export PY3_CONFIG_FLAGS=--extra-python=%{__python3}
 %else
 export PY3_CONFIG_FLAGS=
+%endif
+
+%if 0%{?with_python3}
+pathfix.py -n -p -i %{__python2} buildtools/bin/waf
+%else
+sed -i 's|^#!/usr/bin/env python|#!%{__python2}|g' buildtools/bin/waf
 %endif
 
 %configure --disable-rpath \
@@ -138,12 +144,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python2_sitearch}/tevent.py*
 %{python2_sitearch}/_tevent.so
 
-%if 0%{?fedora} > 0
 %ldconfig_scriptlets
-%else
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-%endif
 
 %if 0%{?with_python3}
 
@@ -155,8 +156,23 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
-* Sun Jul 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.36-0
-- Disable ldconfig_scriptlets for RHEL
+* Wed Aug 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0
+- Provide sed commend instead of pathfix.py for EL 7
+
+* Fri Jul 13 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
+- Drop the unneeded ABI hide patch
+
+* Thu Jul 12 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-1
+- New upstream release 0.9.37
+- Apply a patch to hide local ABI symbols to avoid issues with new binutils
+- Patch the waf script to explicitly call python2 as "env python" doesn't
+  yield py2 anymore
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-3
+- Rebuilt for Python 3.7
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-2
+- Rebuilt for Python 3.7
 
 * Mon Feb 26 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.36-1
 - rhbz#1548613 New upstream release 0.9.36

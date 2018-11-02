@@ -12,7 +12,7 @@ Release: 0%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
-Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
+Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 BuildRequires: gcc
 %if (0%{?fedora} >= 28 || 0%{?rhel} > 7)
@@ -156,6 +156,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
+* Thu Nov 2 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0.1
+- Update Source URL
+
 * Wed Aug 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0
 - Provide sed commend instead of pathfix.py for EL 7
 

@@ -5,7 +5,8 @@
 # Assure that sorting is case sensitive
 LANG=C
 
-MOCKS+=samba4repo-f29-x86_64
+# Current libtevent is recent enough
+#MOCKS+=samba4repo-f29-x86_64
 MOCKS+=samba4repo-7-x86_64
 
 #REPOBASEDIR=/var/www/linux/samba4repo

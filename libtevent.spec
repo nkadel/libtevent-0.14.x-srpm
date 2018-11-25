@@ -8,7 +8,7 @@
 
 Name: libtevent
 Version: 0.9.37
-Release: 0%{?dist}
+Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
@@ -146,6 +146,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 
 %if 0%{?fedora} || 0%{?rhel} > 7
 %ldconfig_scriptlets
+%else
+%post /sbin/ldconfig
+%postun /sbin/ldconfig
 %endif # fedora || rhel > 7
 
 %if 0%{?with_python3}

@@ -144,7 +144,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python2_sitearch}/tevent.py*
 %{python2_sitearch}/_tevent.so
 
+%if 0%{?fedora} || 0%{?rhel} > 7
 %ldconfig_scriptlets
+%endif # fedora || rhel > 7
 
 %if 0%{?with_python3}
 
@@ -156,8 +158,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
-* Thu Nov 2 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0.1
+* Sun Nov 25 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0.1
 - Update Source URL
+- Enable ldconfig_scripts only for fedora || EL > 7
 
 * Wed Aug 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0
 - Provide sed commend instead of pathfix.py for EL 7
@@ -168,7 +171,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 * Thu Jul 12 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-1
 - New upstream release 0.9.37
 - Apply a patch to hide local ABI symbols to avoid issues with new binutils
-- Patch the waf script to explicitly call python2 as "env python" doesn't
+- Patch the waf script to explicitly call python2 as "env python" does not
   yield py2 anymore
 
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-3

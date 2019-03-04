@@ -3,14 +3,12 @@ libtevent-0.9.x-srpm
 
 SRPM building tools for libtevent-0.9.x for runing Samba 4 on RHEL 6.
 
-This tool taken from the RHEL 6.4 release, without modification.
+This tool taken from the Fedora 29 release
 The set of tools need to be built and installed in the following order.
-
-	iniparser-3.1-srpm
 
 	libtalloc-2.1.x-srpm
 	libtdb-1.3.x-srpm
-	libldb-1.1.x-srpm
+	libldb-1.4.x-srpm
 	libtevent-0.9.x-srpm
 
 	samba-srpm

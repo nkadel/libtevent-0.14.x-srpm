@@ -7,7 +7,7 @@
 %endif
 
 Name: libtevent
-Version: 0.9.37
+Version: 0.9.38
 Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
@@ -161,6 +161,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %changelog
+* Tue Jan 22 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.38-0.1
+- Update Source URL
+
 * Sun Nov 25 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0.1
 - Update Source URL
 - Enable ldconfig_scripts only for fedora || EL > 7

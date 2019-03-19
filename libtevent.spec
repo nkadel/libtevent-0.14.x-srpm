@@ -2,36 +2,49 @@
 
 %if 0%{?fedora} || 0%{?rhel} > 7
 %global with_python3 1
-%else
-%global with_python3 0
 %endif
 
+%if 0%{?fedora} || 0%{?rhel} < 8
+%global with_python2 1
+%endif
+
+%if (0%{?with_python2} == 1 && 0%{?with_python3} == 0)
+# We need to sent env PYTHON for python2 only build
+%global export_waf_python export PYTHON=%{__python2}
+%endif
+
+%if (0%{?with_python2} == 1 && 0%{?with_python3} == 1)
+# python3 is default and therefore python2 need to be set as extra-python
+%global extra_python --extra-python=%{__python2}
+%endif
+
+%global talloc_version 2.1.16
+
 Name: libtevent
-Version: 0.9.38
+Version: 0.9.39
 Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
-Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
+Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
+
+# Patches
 
 BuildRequires: gcc
-%if (0%{?fedora} >= 28 || 0%{?rhel} > 7)
-# workaround for unnecessary check in libreplace
-BuildRequires: libtirpc-devel
-%endif
-BuildRequires: libtalloc-devel >= 2.1.0
-BuildRequires: python2-devel
-BuildRequires: python2-talloc-devel >= 2.1.0
+BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
-
-Provides: bundled(libreplace)
-
+%if 0%{?with_python2}
+BuildRequires: python2-devel
+BuildRequires: python2-talloc-devel >= %{talloc_version}
+%endif
 %if 0%{?with_python3}
 BuildRequires: python3-devel
-BuildRequires: python3-talloc-devel >= 2.0.7
+BuildRequires: python3-talloc-devel >= %{talloc_version}
 %endif
+
+Provides: bundled(libreplace)
 
 %description
 Tevent is an event system based on the talloc memory management library.
@@ -43,13 +56,13 @@ tevent_req (Tevent Request) functions.
 %package devel
 Summary: Developer tools for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
-Requires: libtalloc-devel%{?_isa} >= 2.0.7
-Requires: pkgconfig
+Requires: libtalloc-devel%{?_isa} >= %{talloc_version}
 
 %description devel
 Header files needed to develop programs that link against the Tevent library.
 
 
+%if 0%{?with_python2}
 %package -n python2-tevent
 Summary: Python bindings for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
@@ -58,9 +71,9 @@ Requires: libtevent%{?_isa} = %{version}-%{release}
 
 %description -n python2-tevent
 Python bindings for libtevent
+%endif
 
 %if 0%{?with_python3}
-
 %package -n python3-tevent
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
@@ -69,62 +82,29 @@ Requires: libtevent%{?_isa} = %{version}-%{release}
 
 %description -n python3-tevent
 Python 3 bindings for libtevent
-
 %endif
 
 %prep
-# Update timestamps on the files touched by a patch, to avoid non-equal
-# .pyc/.pyo files across the multilib peers within a build, where "Level"
-# is the patch prefix option (e.g. -p1)
-# Taken from specfile for python-simplejson
-UpdateTimestamps() {
-  Level=$1
-  PatchFile=$2
-
-  # Locate the affected files:
-  for f in $(diffstat $Level -l $PatchFile); do
-    # Set the files to have the same timestamp as that of the patch:
-    touch -r $PatchFile $f
-  done
-}
-
 %autosetup -n tevent-%{version} -p1
 
 %build
-
-%if 0%{?with_python3}
-export PY3_CONFIG_FLAGS=--extra-python=%{__python3}
-%else
-export PY3_CONFIG_FLAGS=
-%endif
-
-%if 0%{?with_python3}
-pathfix.py -n -p -i %{__python2} buildtools/bin/waf
-%else
-sed -i 's|^#!/usr/bin/env python|#!%{__python2}|g' buildtools/bin/waf
-%endif
-
+%{?export_waf_python}
 %configure --disable-rpath \
            --bundled-libraries=NONE \
            --builtin-libraries=replace \
-           $PY3_CONFIG_FLAGS
+           %{?extra_python}
 
 make %{?_smp_mflags} V=1
 
 doxygen doxy.config
 
 %check
+%{?export_waf_python}
 make %{?_smp_mflags} check
 
 %install
-
+%{?export_waf_python}
 make install DESTDIR=$RPM_BUILD_ROOT
-
-# Shared libraries need to be marked executable for
-# rpmbuild to strip them and include them in debuginfo
-find $RPM_BUILD_ROOT -name "*.so*" -exec chmod -c +x {} \;
-
-rm -f $RPM_BUILD_ROOT%{_libdir}/libtevent.a
 
 # Install API docs
 rm -f doc/man/man3/todo*
@@ -140,36 +120,34 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{_libdir}/pkgconfig/tevent.pc
 %{_mandir}/man3/tevent*.gz
 
+%if 0%{?with_python2}
 %files -n python2-tevent
 %{python2_sitearch}/tevent.py*
 %{python2_sitearch}/_tevent.so
-
-%if 0%{?fedora} || 0%{?rhel} > 7
-%ldconfig_scriptlets
-%else
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-%endif # fedora || rhel > 7
+%endif
 
 %if 0%{?with_python3}
-
 %files -n python3-tevent
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
-
 %endif
 
+%ldconfig_scriptlets
+
 %changelog
-* Tue Jan 22 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.38-0.1
-- Update Source URL
+* Tue Mar 19 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.1
+- Roll back release to avoid rawhide conflicts
+- Include python2/python3 workarounds for Fedora python3 defaults
 
-* Sun Nov 25 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0.1
-- Update Source URL
-- Enable ldconfig_scripts only for fedora || EL > 7
+* Tue Feb 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-1
+- rhbz#1683186 - New upstream release 0.9.39
 
-* Wed Aug 8 2018 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.37-0
-- Provide sed commend instead of pathfix.py for EL 7
+* Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.38-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Thu Jan 17 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.38-1
+- New upstream release 0.9.38
 
 * Fri Jul 13 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
 - Drop the unneeded ABI hide patch
@@ -177,7 +155,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 * Thu Jul 12 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-1
 - New upstream release 0.9.37
 - Apply a patch to hide local ABI symbols to avoid issues with new binutils
-- Patch the waf script to explicitly call python2 as "env python" does not
+- Patch the waf script to explicitly call python2 as "env python" doesn't
   yield py2 anymore
 
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-3

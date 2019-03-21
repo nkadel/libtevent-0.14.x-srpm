@@ -7,10 +7,12 @@ LANG=C
 
 MOCKS+=samba4repo-f29-x86_64
 MOCKS+=samba4repo-7-x86_64
+MOCKS+=samba4repo-6-x86_64
 
 # repositories to touch after installation
-MOCKCFGS+=samba4repo-f29-x86_64
-MOCKCFGS+=samba4repo-7-x86_64
+#MOCKCFGS+=samba4repo-f29-x86_64
+#MOCKCFGS+=samba4repo-7-x86_64
+#MOCKCFGS+=samba4repo-6-x86_64
 
 #REPOBASEDIR=/var/www/linux/samba4repo
 REPOBASEDIR:=`/bin/pwd`/../samba4repo
@@ -75,6 +77,8 @@ install:: $(MOCKS)
 	    echo "Pushing RPMS to $$rpmdir"; \
 	    rsync -av $$repo/*.rpm --exclude=*.src.rpm --exclude=*debuginfo*.rpm --no-owner --no-group $$repo/*.rpm $$rpmdir/. || exit 1; \
 	    createrepo -q --update $$rpmdir/.; \
+	    echo "Touching $(PWD)/../$$repo.cfg to clear cache"; \
+	    /bin/touch --no-dereference $(PWD)/../$$repo.cfg; \
 	done
 	@for repo in $(MOCKCFGS); do \
 	    echo "Touching $(PWD)/../$$repo.cfg to clear cache"; \

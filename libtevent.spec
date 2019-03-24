@@ -35,11 +35,14 @@ BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
+BuildRequires: %{__python}
 %if 0%{?with_python2}
+BuildRequires: %{__python2}
 BuildRequires: python2-devel
 BuildRequires: python2-talloc-devel >= %{talloc_version}
 %endif
 %if 0%{?with_python3}
+BuildRequires: %{__python3}
 BuildRequires: python3-devel
 BuildRequires: python3-talloc-devel >= %{talloc_version}
 %endif
@@ -133,12 +136,15 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python3_sitearch}/_tevent.cpython*.so
 %endif
 
-%ldconfig_scriptlets
+#%%ldconfig_scriptlets
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %changelog
 * Tue Mar 19 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.1
 - Roll back release to avoid rawhide conflicts
 - Include python2/python3 workarounds for Fedora python3 defaults
+- Swap out ldconfig_scriptlets for RHEL 7 compilation
 
 * Tue Feb 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-1
 - rhbz#1683186 - New upstream release 0.9.39

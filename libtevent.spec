@@ -13,7 +13,7 @@
 %endif
 
 %if %{with_python2} && ! %{with_python3}
-# We need to sent env PYTHON for python2 only build
+# We need to set env PYTHON for python2 only build
 %global export_waf_python export PYTHON=%{__python2}
 %endif
 
@@ -26,11 +26,11 @@
 
 Name: libtevent
 Version: 0.9.39
-Release: 0.1%{?dist}
+Release: 0%{?dist}
 Summary: The tevent library
 License: LGPLv3+
-URL: https://tevent.samba.org/
-Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
+URL: http://tevent.samba.org/
+Source: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 # Patches
 
@@ -39,14 +39,11 @@ BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
-BuildRequires: %{__python}
 %if %{with_python2}
-BuildRequires: %{__python2}
 BuildRequires: python2-devel
 BuildRequires: python2-talloc-devel >= %{talloc_version}
 %endif
 %if %{with_python3}
-BuildRequires: %{__python3}
 BuildRequires: python3-devel
 BuildRequires: python3-talloc-devel >= %{talloc_version}
 %endif
@@ -145,11 +142,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
-* Tue Mar 19 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.1
-- Roll back release to avoid rawhide conflicts
-- Include python2/python3 workarounds for Fedora python3 defaults
-- Swap out ldconfig_scriptlets for RHEL 7 compilation
-- Simplify with_python logic
+* Mon Apr 1 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0
+- Replace ldconfig_scriptlets for RHEL compatibility
+- Replace with_python2 and with_python2 logic for RHEL compatibility
 
 * Tue Feb 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-1
 - rhbz#1683186 - New upstream release 0.9.39

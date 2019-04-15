@@ -6,13 +6,13 @@
 LANG=C
 
 MOCKS+=samba4repo-f29-x86_64
+MOCKS+=samba4repo-8-x86_64
 MOCKS+=samba4repo-7-x86_64
-MOCKS+=samba4repo-6-x86_64
 
 # repositories to touch after installation
 #MOCKCFGS+=samba4repo-f29-x86_64
+#MOCKCFGS+=samba4repo-8-x86_64
 #MOCKCFGS+=samba4repo-7-x86_64
-#MOCKCFGS+=samba4repo-6-x86_64
 
 #REPOBASEDIR=/var/www/linux/samba4repo
 REPOBASEDIR:=`/bin/pwd`/../samba4repo
@@ -60,6 +60,7 @@ install:: $(MOCKS)
 	    case $$repo in \
 		*-6-x86_64) yumrelease=el/6; yumarch=x86_64; ;; \
 		*-7-x86_64) yumrelease=el/7; yumarch=x86_64; ;; \
+		*-8-x86_64) yumrelease=el/8; yumarch=x86_64; ;; \
 		*-29-x86_64) yumrelease=fedora/29; yumarch=x86_64; ;; \
 		*-f29-x86_64) yumrelease=fedora/29; yumarch=x86_64; ;; \
 		*) echo "Unrecognized relese for $$repo, exiting" >&2; exit 1; ;; \

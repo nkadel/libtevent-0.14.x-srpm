@@ -1,6 +1,6 @@
 %{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
-%if 0%{?fedora} || 0%{?rhel} > 7
+%if 0%{?fedora} || 0%{?rhel} > 6
 %global with_python3 1
 %else
 %global with_python3 0
@@ -22,11 +22,15 @@
 %global extra_python --extra-python=%{__python2}
 %endif
 
+%if 0%{?rhel} == 7
+%global __python3 /usr/bin/python3.6
+%endif # rhel == 7
+
 %global talloc_version 2.1.16
 
 Name: libtevent
 Version: 0.9.39
-Release: 0%{?dist}
+Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
@@ -42,11 +46,16 @@ BuildRequires: libxslt
 %if %{with_python2}
 BuildRequires: python2-devel
 BuildRequires: python2-talloc-devel >= %{talloc_version}
-%endif
+%endif # with_python2
 %if %{with_python3}
+%if 0%{?rhel} == 7
+BuildRequires: python36-devel
+BuildRequires: python36-talloc-devel >= %{talloc_version}
+%else
 BuildRequires: python3-devel
 BuildRequires: python3-talloc-devel >= %{talloc_version}
-%endif
+%endif # rhel == 7
+%endif # with_python3
 
 Provides: bundled(libreplace)
 
@@ -78,15 +87,27 @@ Python bindings for libtevent
 %endif
 
 %if %{with_python3}
+%if 0%{?rhel} == 7
+%package -n python36-tevent
+%else
 %package -n python3-tevent
+%endif # rhel == 7
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
 
+%if 0%{?rhel} == 7
+%{?python_provide:%python_provide python36-tevent}
+%else
 %{?python_provide:%python_provide python3-tevent}
+%endif # rhel == 7
 
+%if 0%{?rhel} == 7
+%description -n python36-tevent
+%else
 %description -n python3-tevent
+%endif # rhel == 7
 Python 3 bindings for libtevent
-%endif
+%endif # with_python3
 
 %prep
 %autosetup -n tevent-%{version} -p1
@@ -131,17 +152,24 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %if %{with_python3}
+%if 0%{?rhel} == 7
+%files -n python36-tevent
+%else
 %files -n python3-tevent
+%endif # rhel == 7
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
-%endif
+%endif # with_python3
 
 #%%ldconfig_scriptlets
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Apr 15 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.1
+- Add python36 support for RHEL 7
+
 * Mon Apr 1 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0
 - Replace ldconfig_scriptlets for RHEL compatibility
 - Replace with_python2 and with_python2 logic for RHEL compatibility

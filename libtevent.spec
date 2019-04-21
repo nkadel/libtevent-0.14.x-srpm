@@ -1,12 +1,36 @@
+# Single python3 version in Fedora, python3_pkgversion macro not available
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+%{!?python2_pkgversion:%global python2_pkgversion 2}
+
 %{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
+%if 0%{?fedora} || 0%{?rhel} > 6
 %global with_python3 1
+%else
+%global with_python3 0
+%endif
 
-%global talloc_version 2.2.0
+%if 0%{?fedora} || 0%{?rhel} < 8
+%global with_python2 1
+%else
+%global with_python2 0
+%endif
+
+%if %{with_python2} && ! %{with_python3}
+# We need to set env PYTHON for python2 only build
+%global export_waf_python export PYTHON=%{__python2}
+%endif
+
+%if %{with_python2} && %{with_python3}
+# python3 is default and therefore python2 need to be set as extra-python
+%global extra_python --extra-python=%{__python2}
+%endif
+
+%global talloc_version 2.1.16
 
 Name: libtevent
-Version: 0.10.0
-Release: 0%{?dist}
+Version: 0.9.39
+Release: 0.2%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
@@ -19,8 +43,14 @@ BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
-BuildRequires: python3-devel
-BuildRequires: python3-talloc-devel >= %{talloc_version}
+%if %{with_python2}
+BuildRequires: python2-devel
+BuildRequires: python2-talloc-devel >= %{talloc_version}
+%endif # with_python2
+%if %{with_python3}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-talloc-devel >= %{talloc_version}
+%endif # with_python3
 
 Provides: bundled(libreplace)
 
@@ -40,14 +70,27 @@ Requires: libtalloc-devel%{?_isa} >= %{talloc_version}
 Header files needed to develop programs that link against the Tevent library.
 
 
-%package -n python3-tevent
+%if %{with_python2}
+%package -n python2-tevent
+Summary: Python bindings for the Tevent library
+Requires: libtevent%{?_isa} = %{version}-%{release}
+
+%{?python_provide:%python_provide python2-tevent}
+
+%description -n python2-tevent
+Python bindings for libtevent
+%endif
+
+%if %{with_python3}
+%package -n python%{python3_pkgversion}-tevent
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent%{?_isa} = %{version}-%{release}
 
-%{?python_provide:%python_provide python3-tevent}
+%{?python_provide:%python_provide python%{python3_pkgversion}-tevent}
 
-%description -n python3-tevent
+%description -n python%{python3_pkgversion}-tevent
 Python 3 bindings for libtevent
+%endif # with_python3
 
 %prep
 %autosetup -n tevent-%{version} -p1
@@ -85,19 +128,26 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{_libdir}/pkgconfig/tevent.pc
 %{_mandir}/man3/tevent*.gz
 
-%files -n python3-tevent
+%if %{with_python2}
+%files -n python2-tevent
+%{python2_sitearch}/tevent.py*
+%{python2_sitearch}/_tevent.so
+%endif
+
+%if %{with_python3}
+%files -n python%{python3_pkgversion}-tevent
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
+%endif # with_python3
 
 #%%ldconfig_scriptlets
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %changelog
-* Thu Apr 4 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.0-0
-- Update to 0.10.0
-- Discard python2, retain python3 settings
+* Mon Apr 15 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2
+- Add pkg_version support for RHEL 7
 
 * Mon Apr 1 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0
 - Replace ldconfig_scriptlets for RHEL compatibility

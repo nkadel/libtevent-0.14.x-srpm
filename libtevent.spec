@@ -1,18 +1,11 @@
 # Single python3 version in Fedora, python3_pkgversion macro not available
 %{!?python3_pkgversion:%global python3_pkgversion 3}
-%{!?python2_pkgversion:%global python2_pkgversion 2}
 
-%{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-
-%if 0%{?fedora} || 0%{?rhel} > 6
 %global with_python3 1
-%else
-%global with_python3 0
-%endif
 
-%if 0%{?fedora} || 0%{?rhel} < 8
 %global with_python2 1
-%else
+%if 0%{?fedora} > 30
+# Python2 deprecated for fedora > 30
 %global with_python2 0
 %endif
 
@@ -30,7 +23,7 @@
 
 Name: libtevent
 Version: 0.9.39
-Release: 0.2%{?dist}
+Release: 0.3%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
@@ -146,6 +139,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Apr 25 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2
+- Update python2/python3 logic to discard python2 for Fedora > 30
+
 * Mon Apr 15 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2
 - Add pkg_version support for RHEL 7
 

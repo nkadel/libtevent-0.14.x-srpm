@@ -4,7 +4,7 @@
 %global with_python3 1
 
 %global with_python2 1
-%if 0%{?fedora} > 30
+%if 0%{?fedora} > 30 || 0%{?rhel} > 7
 # Python2 deprecated for fedora > 30
 %global with_python2 0
 %endif
@@ -23,7 +23,7 @@
 
 Name: libtevent
 Version: 0.9.39
-Release: 0.3%{?dist}
+Release: 0.4%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: http://tevent.samba.org/
@@ -139,7 +139,10 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
-* Thu Apr 25 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2
+* Sun May 13 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.4
+- Disable python2 for RHEL 8
+
+* Thu Apr 25 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.3
 - Update python2/python3 logic to discard python2 for Fedora > 30
 
 * Mon Apr 15 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2

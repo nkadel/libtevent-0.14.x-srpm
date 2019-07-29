@@ -5,7 +5,8 @@
 # Assure that sorting is case sensitive
 LANG=C
 
-MOCKS+=samba4repo-f30-x86_64
+# Fedora includes 0.9.39
+#MOCKS+=samba4repo-f30-x86_64
 #MOCKS+=samba4repo-8-x86_64
 MOCKS+=samba4repo-7-x86_64
 

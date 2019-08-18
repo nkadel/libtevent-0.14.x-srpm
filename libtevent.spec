@@ -3,27 +3,13 @@
 
 %global with_python3 1
 
-%global with_python2 1
-%if 0%{?fedora} > 30 || 0%{?rhel} > 7
-# Python2 deprecated for fedora > 30
 %global with_python2 0
-%endif
 
-%if %{with_python2} && ! %{with_python3}
-# We need to set env PYTHON for python2 only build
-%global export_waf_python export PYTHON=%{__python2}
-%endif
-
-%if %{with_python2} && %{with_python3}
-# python3 is default and therefore python2 need to be set as extra-python
-%global extra_python --extra-python=%{__python2}
-%endif
-
-%global talloc_version 2.1.16
+%global talloc_version 2.2.0
 
 Name: libtevent
-Version: 0.9.39
-Release: 0.4%{?dist}
+Version: 0.10.0
+Release: 2%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://wwwtevent.samba.org/
@@ -56,8 +42,8 @@ tevent_req (Tevent Request) functions.
 
 %package devel
 Summary: Developer tools for the Tevent library
-Requires: libtevent%{?_isa} = %{version}-%{release}
-Requires: libtalloc-devel%{?_isa} >= %{talloc_version}
+Requires: libtevent = %{version}-%{release}
+Requires: libtalloc-devel >= %{talloc_version}
 
 %description devel
 Header files needed to develop programs that link against the Tevent library.
@@ -66,7 +52,7 @@ Header files needed to develop programs that link against the Tevent library.
 %if %{with_python2}
 %package -n python2-tevent
 Summary: Python bindings for the Tevent library
-Requires: libtevent%{?_isa} = %{version}-%{release}
+Requires: libtevent = %{version}-%{release}
 
 %{?python_provide:%python_provide python2-tevent}
 
@@ -77,9 +63,11 @@ Python bindings for libtevent
 %if %{with_python3}
 %package -n python%{python3_pkgversion}-tevent
 Summary: Python 3 bindings for the Tevent library
-Requires: libtevent%{?_isa} = %{version}-%{release}
-
+Requires: libtevent = %{version}-%{release}
 %{?python_provide:%python_provide python%{python3_pkgversion}-tevent}
+%if ! %{with_python2}
+Obsoletes: python2-tevent
+%endif
 
 %description -n python%{python3_pkgversion}-tevent
 Python 3 bindings for libtevent
@@ -92,8 +80,7 @@ Python 3 bindings for libtevent
 %{?export_waf_python}
 %configure --disable-rpath \
            --bundled-libraries=NONE \
-           --builtin-libraries=replace \
-           %{?extra_python}
+           --builtin-libraries=replace
 
 make %{?_smp_mflags} V=1
 
@@ -130,7 +117,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %if %{with_python3}
 %files -n python%{python3_pkgversion}-tevent
 %{python3_sitearch}/tevent.py
+%if 0%{?fedora} > 0 || 0%{?rhel} >= 8
 %{python3_sitearch}/__pycache__/tevent.*
+%endif
 %{python3_sitearch}/_tevent.cpython*.so
 %endif # with_python3
 
@@ -139,7 +128,12 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
-* Sun May 13 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.4
+* Sun Jul 28 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.0-0
+- Disable python2
+- Update to 0.10.0
+- Skip __pycache__ for rhel
+
+* Mon May 13 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.4
 - Disable python2 for RHEL 8
 
 * Thu Apr 25 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.3

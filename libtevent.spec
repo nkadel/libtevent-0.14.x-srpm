@@ -8,8 +8,8 @@
 %global talloc_version 2.2.0
 
 Name: libtevent
-Version: 0.10.0
-Release: 2%{?dist}
+Version: 0.10.1
+Release: 0%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://wwwtevent.samba.org/

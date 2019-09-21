@@ -17,6 +17,11 @@ Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 # Patches
 
+%if 0%{?rhel} == 7
+# Addresses python36- versus python3- dependencies
+BuildRequires: epel-rpm-macros
+%endif
+
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen

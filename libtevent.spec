@@ -17,7 +17,7 @@ Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 # Patches
 
-%if (0%{?rhel} > 0 && 0%{?rhel} <= 7)
+%if 0%{?rhel} > 0
 # Addresses python36- versus python3- dependencies
 BuildRequires: epel-rpm-macros
 %endif
@@ -122,9 +122,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %if %{with_python3}
 %files -n python%{python3_pkgversion}-tevent
 %{python3_sitearch}/tevent.py
-%if 0%{?fedora} > 0 || 0%{?rhel} >= 8
 %{python3_sitearch}/__pycache__/tevent.*
-%endif
 %{python3_sitearch}/_tevent.cpython*.so
 %endif # with_python3
 
@@ -136,7 +134,6 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 * Sun Jul 28 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.0-0
 - Disable python2
 - Update to 0.10.0
-- Skip __pycache__ for rhel
 
 * Mon May 13 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.4
 - Disable python2 for RHEL 8

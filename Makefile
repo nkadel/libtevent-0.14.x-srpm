@@ -6,7 +6,7 @@
 LANG=C
 
 # Fedora includes 0.9.39
-MOCKS+=samba4repo-f30-x86_64
+MOCKS+=samba4repo-f31-x86_64
 MOCKS+=samba4repo-8-x86_64
 MOCKS+=samba4repo-7-x86_64
 
@@ -54,8 +54,8 @@ install:: $(MOCKS)
 	    case $$repo in \
 		*-7-x86_64) yumrelease=el/7; yumarch=x86_64; ;; \
 		*-8-x86_64) yumrelease=el/8; yumarch=x86_64; ;; \
-		*-30-x86_64) yumrelease=fedora/30; yumarch=x86_64; ;; \
-		*-f30-x86_64) yumrelease=fedora/30; yumarch=x86_64; ;; \
+		*-31-x86_64) yumrelease=fedora/31; yumarch=x86_64; ;; \
+		*-f31-x86_64) yumrelease=fedora/31; yumarch=x86_64; ;; \
 		*) echo "Unrecognized relese for $$repo, exiting" >&2; exit 1; ;; \
 	    esac; \
 	    rpmdir=$(REPOBASEDIR)/$$yumrelease/$$yumarch; \

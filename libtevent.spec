@@ -71,7 +71,7 @@ Summary: Python 3 bindings for the Tevent library
 Requires: libtevent = %{version}-%{release}
 %{?python_provide:%python_provide python%{python3_pkgversion}-tevent}
 %if ! %{with_python2}
-Obsoletes: python2-tevent
+Obsoletes: python2-tevent <= %{version}
 %endif
 
 %description -n python%{python3_pkgversion}-tevent

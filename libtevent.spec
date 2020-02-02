@@ -131,6 +131,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sun Feb 2 2020 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-0
+- Update to 0.10.2
+
 * Sun Jul 28 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.0-0
 - Disable python2
 - Update to 0.10.0

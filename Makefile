@@ -6,7 +6,7 @@
 LANG=C
 
 # Fedora includes 0.9.39
-MOCKS+=samba4repo-f31-x86_64
+MOCKS+=samba4repo-f32-x86_64
 MOCKS+=samba4repo-8-x86_64
 MOCKS+=samba4repo-7-x86_64
 
@@ -42,7 +42,7 @@ build:: src.rpm
 
 .PHONY: $(MOCKS)
 $(MOCKS):: src.rpm
-	@if [ -e $@ -a -n "`find $@ -name \*.rpm`" ]; then \
+	@if [ -e $@ -a -n "`find $@ -name \*.rpm 2>/dev/null`" ]; then \
 		echo "	Skipping RPM populated $@"; \
 	else \
 		echo "Actally building $? in $@"; \
@@ -60,8 +60,8 @@ install:: $(MOCKS)
 	    case $$repo in \
 		*-7-x86_64) yumrelease=el/7; yumarch=x86_64; ;; \
 		*-8-x86_64) yumrelease=el/8; yumarch=x86_64; ;; \
-		*-31-x86_64) yumrelease=fedora/31; yumarch=x86_64; ;; \
-		*-f31-x86_64) yumrelease=fedora/31; yumarch=x86_64; ;; \
+		*-32-x86_64) yumrelease=fedora/32; yumarch=x86_64; ;; \
+		*-f32-x86_64) yumrelease=fedora/32; yumarch=x86_64; ;; \
 		*-rawhide-x86_64) yumrelease=fedora/rawhide; yumarch=x86_64; ;; \
 		*) echo "Unrecognized release for $$repo, exiting" >&2; exit 1; ;; \
 	    esac; \

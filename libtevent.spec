@@ -30,11 +30,13 @@ BuildRequires: libxslt
 %if %{with_python2}
 BuildRequires: python2-devel
 BuildRequires: python2-talloc-devel >= %{talloc_version}
-%endif # with_python2
+# with_python2
+%endif
 %if %{with_python3}
 BuildRequires: python%{python3_pkgversion}-devel
 BuildRequires: python%{python3_pkgversion}-talloc-devel >= %{talloc_version}
-%endif # with_python3
+# with_python3
+%endif
 
 Provides: bundled(libreplace)
 
@@ -76,7 +78,8 @@ Obsoletes: python2-tevent <= %{version}
 
 %description -n python%{python3_pkgversion}-tevent
 Python 3 bindings for libtevent
-%endif # with_python3
+# with_python3
+%endif
 
 %prep
 %autosetup -n tevent-%{version} -p1
@@ -124,7 +127,8 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
-%endif # with_python3
+# with_python3
+%endif
 
 #%%ldconfig_scriptlets
 %post -p /sbin/ldconfig

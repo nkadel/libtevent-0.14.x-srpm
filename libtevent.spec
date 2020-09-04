@@ -1,6 +1,3 @@
-# Single python3 version in Fedora, python3_pkgversion macro not available
-%{!?python3_pkgversion:%global python3_pkgversion 3}
-
 %global with_python3 1
 
 %global with_python2 0
@@ -9,18 +6,14 @@
 
 Name: libtevent
 Version: 0.10.2
-Release: 0%{?dist}
+#Release: 1%%{?dist}
+Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://wwwtevent.samba.org/
 Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 # Patches
-
-%if 0%{?rhel} > 0
-# Addresses python36- versus python3- dependencies
-BuildRequires: epel-rpm-macros
-%endif
 
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
@@ -33,8 +26,8 @@ BuildRequires: python2-talloc-devel >= %{talloc_version}
 # with_python2
 %endif
 %if %{with_python3}
-BuildRequires: python%{python3_pkgversion}-devel
-BuildRequires: python%{python3_pkgversion}-talloc-devel >= %{talloc_version}
+BuildRequires: python3-devel
+BuildRequires: python3-talloc-devel >= %{talloc_version}
 # with_python3
 %endif
 
@@ -68,15 +61,15 @@ Python bindings for libtevent
 %endif
 
 %if %{with_python3}
-%package -n python%{python3_pkgversion}-tevent
+%package -n python3-tevent
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent = %{version}-%{release}
-%{?python_provide:%python_provide python%{python3_pkgversion}-tevent}
+%{?python_provide:%python_provide python3-tevent}
 %if ! %{with_python2}
 Obsoletes: python2-tevent <= %{version}
 %endif
 
-%description -n python%{python3_pkgversion}-tevent
+%description -n python3-tevent
 Python 3 bindings for libtevent
 # with_python3
 %endif
@@ -123,7 +116,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %endif
 
 %if %{with_python3}
-%files -n python%{python3_pkgversion}-tevent
+%files -n python3-tevent
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
@@ -135,6 +128,10 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sat Sep 5 2020 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-0.1
+- Discard BuildRequires for epel-rpm-macros 
+- Switch to python3 rather than python%%{python3_pkgversion}
+
 * Sun Feb 2 2020 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-0
 - Update to 0.10.2
 

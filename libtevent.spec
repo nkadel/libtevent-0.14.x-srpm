@@ -1,16 +1,14 @@
-%global with_python3 1
-
-%global with_python2 0
-
-%global talloc_version 2.2.0
+%global talloc_version 2.3.1
 
 Name: libtevent
 Version: 0.10.2
-#Release: 1%%{?dist}
-Release: 0.1%{?dist}
+#Release: 2%{?dist}
+# Incfremented to force update from RHEL 8 version,
+# which had its "turf marked" by discarding python3-*-devel packages
+Release: 2.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
-URL: https://wwwtevent.samba.org/
+URL: https://tevent.samba.org/
 Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
 
 # Patches
@@ -20,16 +18,8 @@ BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libxslt
-%if %{with_python2}
-BuildRequires: python2-devel
-BuildRequires: python2-talloc-devel >= %{talloc_version}
-# with_python2
-%endif
-%if %{with_python3}
 BuildRequires: python3-devel
 BuildRequires: python3-talloc-devel >= %{talloc_version}
-# with_python3
-%endif
 
 Provides: bundled(libreplace)
 
@@ -48,37 +38,35 @@ Requires: libtalloc-devel >= %{talloc_version}
 %description devel
 Header files needed to develop programs that link against the Tevent library.
 
-
-%if %{with_python2}
-%package -n python2-tevent
-Summary: Python bindings for the Tevent library
-Requires: libtevent = %{version}-%{release}
-
-%{?python_provide:%python_provide python2-tevent}
-
-%description -n python2-tevent
-Python bindings for libtevent
-%endif
-
-%if %{with_python3}
 %package -n python3-tevent
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent = %{version}-%{release}
 %{?python_provide:%python_provide python3-tevent}
-%if ! %{with_python2}
 Obsoletes: python2-tevent <= %{version}
-%endif
 
 %description -n python3-tevent
 Python 3 bindings for libtevent
-# with_python3
-%endif
 
 %prep
-%autosetup -n tevent-%{version} -p1
+# Update timestamps on the files touched by a patch, to avoid non-equal
+# .pyc/.pyo files across the multilib peers within a build, where "Level"
+# is the patch prefix option (e.g. -p1)
+# Taken from specfile for python-simplejson
+UpdateTimestamps() {
+  Level=$1
+  PatchFile=$2
+
+  # Locate the affected files:
+  for f in $(diffstat $Level -l $PatchFile); do
+    # Set the files to have the same timestamp as that of the patch:
+    touch -r $PatchFile $f
+  done
+}
+
+%setup -q -n tevent-%{version}
 
 %build
-%{?export_waf_python}
+#%{?export_waf_python}
 %configure --disable-rpath \
            --bundled-libraries=NONE \
            --builtin-libraries=replace
@@ -109,72 +97,44 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{_libdir}/pkgconfig/tevent.pc
 %{_mandir}/man3/tevent*.gz
 
-%if %{with_python2}
-%files -n python2-tevent
-%{python2_sitearch}/tevent.py*
-%{python2_sitearch}/_tevent.so
-%endif
-
-%if %{with_python3}
 %files -n python3-tevent
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
-# with_python3
-%endif
 
 #%%ldconfig_scriptlets
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %changelog
-* Sat Sep 5 2020 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-0.1
-- Discard BuildRequires for epel-rpm-macros 
-- Switch to python3 rather than python%%{python3_pkgversion}
+* Sat Jan 16 2021 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-2.1
+- Restore use of python3-talloc-devel and python3-tevent-devel
+  because RHEL elected to "mark their turf" by discarding them
+  when backporting from Fedora
 
-* Sun Feb 2 2020 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-0
-- Update to 0.10.2
+* Tue Jun 2 2020 Isaac Boukris <iboukris@redhat.com> - 0.10.2-2
+- Resolves: #1817563 - Upgrade tevent to 0.10.2 version for samba
 
-* Sun Jul 28 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.0-0
-- Disable python2
-- Update to 0.10.0
+* Tue Nov 26 2019 Isaac Boukris <iboukris@redhat.com> - 0.10.0-2
+- Resolves: #1754421 - Upgrade tevent to 0.10.0 version for samba
+- Related: #1754421 - Fix sssd tests (tevent)
 
-* Mon May 13 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.4
-- Disable python2 for RHEL 8
+* Tue Apr 30 2019 Jakub Hrozek <jhrozek@redhat.com>
+- Remove the python2 subpackages on upgrade
+- Resolves: #1567139 - libtevent: Drop Python 2 subpackage from RHEL 8
 
-* Thu Apr 25 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.3
-- Update python2/python3 logic to discard python2 for Fedora > 30
+* Wed Apr 24 2019 Jakub Hrozek <jhrozek@redhat.com> - 0.9.39-1
+- Resolves: #1684580 - Rebase libtevent to version 0.9.36 for Samba
+- Resolves: #1597318 - libtevent uses Python 2 to build
+- Resolves: #1567139 - libtevent: Drop Python 2 subpackage from RHEL 8
 
-* Mon Apr 15 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0.2
-- Add pkg_version support for RHEL 7
-
-* Mon Apr 1 2019 Nico Kadel-Garcia <nkadel@gmail.com> - 0.9.39-0
-- Replace ldconfig_scriptlets for RHEL compatibility
-- Replace with_python2 and with_python2 logic for RHEL compatibility
-
-* Tue Feb 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-1
-- rhbz#1683186 - New upstream release 0.9.39
-
-* Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.38-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
-
-* Thu Jan 17 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.38-1
-- New upstream release 0.9.38
-
-* Fri Jul 13 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
-- Drop the unneeded ABI hide patch
+* Thu Sep 20 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
+- Resolves: #1624138 - Review annocheck distro flag failures in libtevent
 
 * Thu Jul 12 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-1
 - New upstream release 0.9.37
-- Apply a patch to hide local ABI symbols to avoid issues with new binutils
-- Patch the waf script to explicitly call python2 as "env python" does not
-  yield py2 anymore
-
-* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-3
-- Rebuilt for Python 3.7
-
-* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-2
-- Rebuilt for Python 3.7
+- Use RHEL_ALLOW_PYTHON2_FOR_BUILD=1 for build
+- Use %%{__python2}, not "python", as the Python2 interpreter
 
 * Mon Feb 26 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.36-1
 - rhbz#1548613 New upstream release 0.9.36

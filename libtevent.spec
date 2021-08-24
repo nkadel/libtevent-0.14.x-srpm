@@ -17,6 +17,7 @@ BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
+BuildRequires: libcmocka-devel >= 1.1.3
 BuildRequires: libxslt
 BuildRequires: python3-devel
 BuildRequires: python3-talloc-devel >= %{talloc_version}

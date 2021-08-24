@@ -1,11 +1,11 @@
 %global talloc_version 2.3.1
 
 Name: libtevent
-Version: 0.10.2
+Version: 0.11.0
 #Release: 2%{?dist}
 # Incfremented to force update from RHEL 8 version,
 # which had its "turf marked" by discarding python3-*-devel packages
-Release: 2.1%{?dist}
+Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://tevent.samba.org/

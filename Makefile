@@ -5,7 +5,6 @@
 # Assure that sorting is case sensitive
 LANG=C
 
-# Fedora includes 0.9.39
 MOCKS+=samba4repo-f34-x86_64
 # EL8 discarded python3-[package]-devel packages, cannot be used
 MOCKS+=samba4repo-8-x86_64

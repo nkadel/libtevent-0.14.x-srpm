@@ -19,8 +19,8 @@ BuildRequires: doxygen
 BuildRequires: docbook-style-xsl
 BuildRequires: libcmocka-devel >= 1.1.3
 BuildRequires: libxslt
-BuildRequires: python3-devel
-BuildRequires: python3-talloc-devel >= %{talloc_version}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-talloc-devel >= %{talloc_version}
 
 Provides: bundled(libreplace)
 
@@ -39,13 +39,13 @@ Requires: libtalloc-devel >= %{talloc_version}
 %description devel
 Header files needed to develop programs that link against the Tevent library.
 
-%package -n python3-tevent
+%package -n python%{python3_pkgversion}-tevent
 Summary: Python 3 bindings for the Tevent library
 Requires: libtevent = %{version}-%{release}
-%{?python_provide:%python_provide python3-tevent}
+%{?python_provide:%python_provide python%{python3_pkgversion}-tevent}
 Obsoletes: python2-tevent <= %{version}
 
-%description -n python3-tevent
+%description -n python%{python3_pkgversion}-tevent
 Python 3 bindings for libtevent
 
 %prep
@@ -98,7 +98,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %{_libdir}/pkgconfig/tevent.pc
 %{_mandir}/man3/tevent*.gz
 
-%files -n python3-tevent
+%files -n python%{python3_pkgversion}-tevent
 %{python3_sitearch}/tevent.py
 %{python3_sitearch}/__pycache__/tevent.*
 %{python3_sitearch}/_tevent.cpython*.so
@@ -112,6 +112,7 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 - Restore use of python3-talloc-devel and python3-tevent-devel
   because RHEL elected to "mark their turf" by discarding them
   when backporting from Fedora
+- Use python%%{python3_pkgversion}- rather than python3- for EPEL consistency
 
 * Tue Jun 2 2020 Isaac Boukris <iboukris@redhat.com> - 0.10.2-2
 - Resolves: #1817563 - Upgrade tevent to 0.10.2 version for samba

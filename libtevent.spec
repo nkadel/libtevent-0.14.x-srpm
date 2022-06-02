@@ -1,8 +1,7 @@
 %global talloc_version 2.3.1
 
 Name: libtevent
-Version: 0.11.0
-#Release: 2%{?dist}
+Version: 0.12.0
 # Incfremented to force update from RHEL 8 version,
 # which had its "turf marked" by discarding python3-*-devel packages
 Release: 0.1%{?dist}
@@ -108,6 +107,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Jun 1 2022 Nico Kadel-Garcia <nkadel@gmail.com> - 0.12.0-0.1
+- Update to 0.12.0
+
 * Sat Jan 16 2021 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-2.1
 - Restore use of python3-talloc-devel and python3-tevent-devel
   because RHEL elected to "mark their turf" by discarding them

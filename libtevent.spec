@@ -1,4 +1,4 @@
-%global talloc_version 2.3.1
+%global talloc_version 2.3.4
 
 Name: libtevent
 Version: 0.12.1
@@ -8,9 +8,13 @@ Release: 0.1%{?dist}
 Summary: The tevent library
 License: LGPLv3+
 URL: https://tevent.samba.org/
-Source: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
+Source0: https://www.samba.org/ftp/tevent/tevent-%{version}.tar.gz
+Source1: https://samba.org/ftp/tevent/tevent-%{version}.tar.asc
+# gpg2 --no-default-keyring --keyring ./tevent.keyring --recv-keys 9147A339719518EE9011BCB54793916113084025
+Source2: tevent.keyring
 
 # Patches
+Patch0001: 0003-wafsamba-Fix-few-SyntaxWarnings-caused-by-regular-ex.patch
 
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
@@ -48,22 +52,10 @@ Obsoletes: python2-tevent <= %{version}
 Python 3 bindings for libtevent
 
 %prep
-# Update timestamps on the files touched by a patch, to avoid non-equal
-# .pyc/.pyo files across the multilib peers within a build, where "Level"
-# is the patch prefix option (e.g. -p1)
-# Taken from specfile for python-simplejson
-UpdateTimestamps() {
-  Level=$1
-  PatchFile=$2
+# STOP DOING THIS. It takes unnecessary ubuild time
+#zcat %%{SOURCE0} | gpgv2 --quiet --keyring %%{SOURCE2} %%{SOURCE1} -
 
-  # Locate the affected files:
-  for f in $(diffstat $Level -l $PatchFile); do
-    # Set the files to have the same timestamp as that of the patch:
-    touch -r $PatchFile $f
-  done
-}
-
-%setup -q -n tevent-%{version}
+%autosetup -n tevent-%{version} -p1
 
 %build
 #%{?export_waf_python}
@@ -109,39 +101,91 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %changelog
 * Thu Jun 16 2022 Nico Kadel-Garcia <nkadel@gmail.com> - 0.12.1-0.1
 - Update to 1.12.1
-
-* Wed Jun 1 2022 Nico Kadel-Garcia <nkadel@gmail.com> - 0.12.0-0.1
-- Update to 0.12.0
-
-* Sat Jan 16 2021 Nico Kadel-Garcia <nkadel@gmail.com> - 0.10.2-2.1
 - Restore use of python3-talloc-devel and python3-tevent-devel
   because RHEL elected to "mark their turf" by discarding them
   when backporting from Fedora
 - Use python%%{python3_pkgversion}- rather than python3- for EPEL consistency
 
-* Tue Jun 2 2020 Isaac Boukris <iboukris@redhat.com> - 0.10.2-2
-- Resolves: #1817563 - Upgrade tevent to 0.10.2 version for samba
+* Mon May 02 2022 Pavel Filipenský <pfilipen@redhat.com> - 0.12.0-0
+- Update to version 0.12.0
 
-* Tue Nov 26 2019 Isaac Boukris <iboukris@redhat.com> - 0.10.0-2
-- Resolves: #1754421 - Upgrade tevent to 0.10.0 version for samba
-- Related: #1754421 - Fix sssd tests (tevent)
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 0.11.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
-* Tue Apr 30 2019 Jakub Hrozek <jhrozek@redhat.com>
-- Remove the python2 subpackages on upgrade
-- Resolves: #1567139 - libtevent: Drop Python 2 subpackage from RHEL 8
+* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 0.11.0-1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
-* Wed Apr 24 2019 Jakub Hrozek <jhrozek@redhat.com> - 0.9.39-1
-- Resolves: #1684580 - Rebase libtevent to version 0.9.36 for Samba
-- Resolves: #1597318 - libtevent uses Python 2 to build
-- Resolves: #1567139 - libtevent: Drop Python 2 subpackage from RHEL 8
+* Fri Jul 09 2021 Andreas Schneider <asn@redhat.com> - 0.11.0-0
+- Update to version 0.11.0
 
-* Thu Sep 20 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
-- Resolves: #1624138 - Review annocheck distro flag failures in libtevent
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 0.10.2-8
+- Rebuilt for Python 3.10
+
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 0.10.2-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Thu Oct 22 2020 Andreas Schneider <asn@redhat.com> - 0.10.2-6
+- Spec file cleanup and improvements
+
+* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.10.2-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Mon Jul 13 2020 Tom Stellard <tstellar@redhat.com> - 0.10.2-4
+- Use make macros
+- https://fedoraproject.org/wiki/Changes/UseMakeBuildInstallMacro
+
+* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 0.10.2-3
+- Rebuilt for Python 3.9
+
+* Wed Jan 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.10.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Wed Jan 22 2020 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.10.2-1
+- rhbz#1749005 - libtevent-0.10.2 is available
+
+* Wed Sep 11 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.10.1-1
+- rhbz#1749005 - libtevent-0.10.1 is available
+
+* Mon Aug 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.10.0-1
+- rhbz#1691300 - libtevent-0.10.0 is available
+- rhbz#1737644 - libldb, libtalloc, libtevent, libtdb: Remove Python 2 subpackages from Fedora 31+
+
+* Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 0.9.39-5
+- Rebuilt for Python 3.8
+
+* Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.39-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Fri Jun 14 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-3
+- rhbz#1718113 - samba fail to build with Python 3.8
+  AttributeError: module 'time' has no attribute 'clock'
+
+* Mon Jun 03 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-2
+- rhbz#1711638 - fails to build with Python 3.8.0a4
+
+* Tue Feb 26 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.39-1
+- rhbz#1683186 - New upstream release 0.9.39
+
+* Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.38-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Thu Jan 17 2019 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.38-1
+- New upstream release 0.9.38
+
+* Fri Jul 13 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-2
+- Drop the unneeded ABI hide patch
 
 * Thu Jul 12 2018 Jakub Hrozek <jhrozek@redhat.com> - 0.9.37-1
 - New upstream release 0.9.37
-- Use RHEL_ALLOW_PYTHON2_FOR_BUILD=1 for build
-- Use %%{__python2}, not "python", as the Python2 interpreter
+- Apply a patch to hide local ABI symbols to avoid issues with new binutils
+- Patch the waf script to explicitly call python2 as "env python" doesn't
+  yield py2 anymore
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-3
+- Rebuilt for Python 3.7
+
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.9.36-2
+- Rebuilt for Python 3.7
 
 * Mon Feb 26 2018 Lukas Slebodnik <lslebodn@fedoraproject.org> - 0.9.36-1
 - rhbz#1548613 New upstream release 0.9.36

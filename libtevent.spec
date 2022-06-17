@@ -1,7 +1,7 @@
 %global talloc_version 2.3.1
 
 Name: libtevent
-Version: 0.12.0
+Version: 0.12.1
 # Incfremented to force update from RHEL 8 version,
 # which had its "turf marked" by discarding python3-*-devel packages
 Release: 0.1%{?dist}
@@ -107,6 +107,9 @@ cp -a doc/man/* $RPM_BUILD_ROOT/%{_mandir}
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jun 16 2022 Nico Kadel-Garcia <nkadel@gmail.com> - 0.12.1-0.1
+- Update to 1.12.1
+
 * Wed Jun 1 2022 Nico Kadel-Garcia <nkadel@gmail.com> - 0.12.0-0.1
 - Update to 0.12.0
 

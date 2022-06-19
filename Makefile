@@ -5,11 +5,10 @@
 # Assure that sorting is case sensitive
 LANG=C
 
-## Fedora includes 0.9.39
-#MOCKS+=samba4repo-f33-x86_64
-## EL8 discarded python3-[package]-devel packages, cannot be used
+#MOCKS+=samba4repo-f36-x86_64
+#MOCKS+=samba4repo-9-x86_64
+# EL8 discarded python3-[package]-devel packages, cannot be used
 #MOCKS+=samba4repo-8-x86_64
-#MOCKS+=samba4repo-7-x86_64
 MOCKS+=samba4repo-amz2-x86_64
 
 MOCKCFGS+=$(MOCKS)
@@ -62,10 +61,10 @@ install:: $(MOCKS)
 	    case $$repo in \
 		amazonlinux-2-x86_64) yumrelease=amazonn/2; yumarch=x86_64; ;; \
 		*-amz2-x86_64) yumrelease=amazon/2; yumarch=x86_64; ;; \
-		*-7-x86_64) yumrelease=el/7; yumarch=x86_64; ;; \
 		*-8-x86_64) yumrelease=el/8; yumarch=x86_64; ;; \
-		*-33-x86_64) yumrelease=fedora/33; yumarch=x86_64; ;; \
-		*-f33-x86_64) yumrelease=fedora/33; yumarch=x86_64; ;; \
+		*-9-x86_64) yumrelease=el/9; yumarch=x86_64; ;; \
+		*-36-x86_64) yumrelease=fedora/36; yumarch=x86_64; ;; \
+		*-f36-x86_64) yumrelease=fedora/36; yumarch=x86_64; ;; \
 		*-rawhide-x86_64) yumrelease=fedora/rawhide; yumarch=x86_64; ;; \
 		*) echo "Unrecognized release for $$repo, exiting" >&2; exit 1; ;; \
 	    esac; \
@@ -73,10 +72,10 @@ install:: $(MOCKS)
 	    srpmdir=$(REPOBASEDIR)/$$yumrelease/SRPMS; \
 	    echo "Pushing SRPMS to $$srpmdir"; \
 	    rsync -av $$repo/*.src.rpm --no-owner --no-group $$repo/*.src.rpm $$srpmdir/. || exit 1; \
-	    createrepo -q $$srpmdir/.; \
+	    createrepo_c -q $$srpmdir/.; \
 	    echo "Pushing RPMS to $$rpmdir"; \
 	    rsync -av $$repo/*.rpm --exclude=*.src.rpm --exclude=*debuginfo*.rpm --no-owner --no-group $$repo/*.rpm $$rpmdir/. || exit 1; \
-	    createrepo -q $$rpmdir/.; \
+	    createrepo_c -q $$rpmdir/.; \
 	done
 	@for repo in $(MOCKCFGS); do \
 	    echo "Touching $(PWD)/../$$repo.cfg"; \

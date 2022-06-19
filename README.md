@@ -1,17 +1,17 @@
-libtevent-0.10.x-srpm
+libtevent-0.11.x-srpm
 =====================
 
-SRPM building tools for libtevent-0.10.x for runing Samba 4 on RHEL 6.
+SRPM building tools for libtevent-0.11.x for runing Samba 4 on RHEL 7.
 
-This tool taken from the Fedora 29 release
+This tool taken from the Fedora 34 release
 The set of tools need to be built and installed in the following order.
 
-	libtalloc-2.1.x-srpm
+	libtalloc-2.3.x-srpm
 	libtdb-1.4.x-srpm
-	libldb-2.1.x-srpm
-	libtevent-0.10.x-srpm
+	libldb-2.3.x-srpm
+	libtevent-0.11.x-srpm
 
-	samba-4.12.x-srpm
+	samba-4.14.x-srpm
 
 The "make" command will do these steps.
 

@@ -1,7 +1,7 @@
 %global talloc_version 2.3.4
 
 Name: libtevent
-Version: 0.12.1
+Version: 0.13.0
 # Incfremented to force update from RHEL 8 version,
 # which had its "turf marked" by discarding python3-*-devel packages
 Release: 0.1%{?dist}
@@ -14,7 +14,7 @@ Source1: https://samba.org/ftp/tevent/tevent-%{version}.tar.asc
 Source2: tevent.keyring
 
 # Patches
-Patch0001: 0003-wafsamba-Fix-few-SyntaxWarnings-caused-by-regular-ex.patch
+#Patch0001: 0003-wafsamba-Fix-few-SyntaxWarnings-caused-by-regular-ex.patch
 
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}

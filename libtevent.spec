@@ -1,7 +1,7 @@
 %global talloc_version 2.4.0
 
 Name: libtevent
-Version: 0.14.0
+Version: 0.14.1
 # Incfremented to force update from RHEL 8 version,
 # which had its "turf marked" by discarding python3-*-devel packages
 Release: 0.1%{?dist}
